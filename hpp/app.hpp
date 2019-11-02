@@ -1,11 +1,3 @@
-//
-//  app.hpp
-//  network_simulation
-//
-//  Created by Filip Szafran on 26/10/2019.
-//  Copyright © 2019 Filip Szafran. All rights reserved.
-//
-
 #ifndef app_hpp
 #define app_hpp
 

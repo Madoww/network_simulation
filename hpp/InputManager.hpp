@@ -1,11 +1,3 @@
-//
-//  InputManager.hpp
-//  network_simulation
-//
-//  Created by Filip Szafran on 26/10/2019.
-//  Copyright © 2019 Filip Szafran. All rights reserved.
-//
-
 #ifndef InputManager_hpp
 #define InputManager_hpp
 

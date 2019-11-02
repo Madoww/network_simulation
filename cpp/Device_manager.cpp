@@ -1,14 +1,7 @@
-//
-//  Device_manager.cpp
-//  network_simulation
-//
-//  Created by Filip Szafran on 27/10/2019.
-//  Copyright © 2019 Filip Szafran. All rights reserved.
-//
-
 #include "Device_manager.hpp"
 #include <iostream>
 #include <algorithm>
+#include "Switch.hpp"
 
 Device_manager::Device_manager()
 {
@@ -36,4 +29,14 @@ void Device_manager::set_current_device(const std::string& name)
     }
     if(!found)
         std::cout<<"No device found"<<std::endl;
+}
+
+std::unique_ptr<Network_device>& Device_manager::find_device(const std::string& name)
+{
+    for(auto& device : devices)
+    {
+        if(device->get_name()==name)
+            return device;
+    }
+    return devices[0];
 }

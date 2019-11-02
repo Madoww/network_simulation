@@ -1,12 +1,17 @@
 #include "app.hpp"
 #include "Computer.hpp"
+#include "Switch.hpp"
 #include <iostream>
 
 app::app()
 :m_window(sf::VideoMode(800, 600), "SFML window")
 {
     std::unique_ptr<Network_device> k1 (new Computer("k1"));
+    std::unique_ptr<Network_device> k2 (new Computer("k2"));
+    std::unique_ptr<Network_device> s1(new Switch("s1"));
     devices.add_device(k1);
+    devices.add_device(k2);
+    devices.add_device(s1);
 }
 
 void app::run()
