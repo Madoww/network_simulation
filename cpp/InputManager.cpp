@@ -8,8 +8,7 @@
 
 InputManager::InputManager()
 {
-    valid_commands = {"ping","set_device","set_address","get_address","get_type","add_port"
-        ,"set_port","connect_to","get_connection_address"};
+    
 }
 
 void InputManager::get_input()
@@ -28,8 +27,9 @@ void InputManager::print_input()
 void InputManager::call_command(std::string& command)
 {
     argument_count = std::count_if(command.begin(),command.end(),[](char c){return c==' ';})+1;
-    arguments.reserve(3);
-    arguments[2]="";
+    //arguments.reserve(3);
+    arguments.clear();
+    
     std::string current_argument = "";
     command.insert(command.end(), ' ');
     for(int i = 0; i<command.size(); i++)
@@ -59,14 +59,17 @@ void InputManager::call_command(std::string& command)
     else if(function == "get_type")
         cm::get_type();
     else if(function == "add_port")
-        cm::add_port();
+        cm::add_port(arguments[1]);
     else if(function == "set_port")
         cm::set_port(atoi(arguments[1].c_str()));
     else if(function == "connect_to")
         cm::connect_to(arguments[1], atoi(arguments[2].c_str()));
     else if(function == "get_connection_address")
         cm::get_connection();
+    else if(function == "commands")
+        cm::commands();
     else
         std::cout<<"Invalid command"<<std::endl;
-    arguments.clear();
+    for(int i = 0; i<arguments.size(); i++)
+        arguments[i]="";
 }

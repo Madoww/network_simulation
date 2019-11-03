@@ -41,13 +41,13 @@ public:
     void set_address(const std::string&, short mask = -1) override;//Set the address of the current port.
     void set_port(int id);//set the currently used port to ID.
     void add_port();//create a new port.
-    void connect_device(const Address&, int port_id);
+    void connect_device(const Address&, int port_id);//Check whether a port[port_id] exists and is not occupied.
     
     const Address& get_address()const override;//Return the Address of the currently used port.
     int get_current_port_id(){return ports[current_port].get_id();}
     Port& get_port(int id){return ports[id];}
-    bool find_device(const std::string&);
-    const Address& get_connection_address();
+    bool find_device(const std::string&);//Checks if a device with entered address is connected to any of the ports.
+    const Address& get_connection_address();//Returns an address connected to a currently used port.
 private:
     std::vector<Port> ports;
     short current_port = 0;

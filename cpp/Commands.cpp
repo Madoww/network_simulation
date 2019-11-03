@@ -4,8 +4,11 @@
 #include "address.hpp"
 #include "Switch.hpp"
 #define current_device Device_manager::instance().get_current_device()
+#define name_device Device_manager::instance().find_device(name)
 
 namespace cm {
+std::vector<std::string>valid_commands = {"ping <address>","set_device <name>","set_address <address,mask(def-class)","get_address","get_type","add_port<name(def-current)>"
+,"set_port <port_id>","connect_to <name,port_id>","get_connection_address"};
 void ping(const std::string& address)
 {
     Address ip;
@@ -39,14 +42,21 @@ void set_port(int id)
     if(current_device->get_type() == "Switch")
         dynamic_cast<Switch*>(current_device.get())->set_port(id);
 }
-void add_port()
+void add_port(const std::string& name)
 {
-    if(current_device->get_type() == "Switch")
+    if(name=="")
     {
-        dynamic_cast<Switch*>(current_device.get())->add_port();
+        if(current_device->get_type() == "Switch")
+        {
+            dynamic_cast<Switch*>(current_device.get())->add_port();
+        }
+        else
+            std::cout<<"Cannot add a port"<<std::endl;
     }
-    else
-        std::cout<<"Cannot add a port"<<std::endl;
+    else if(dynamic_cast<Switch*>(name_device.get()))
+    {
+        static_cast<Switch*>(name_device.get())->add_port();
+    }
 }
 void connect_to(const std::string& name, int port_id)
 {
@@ -75,6 +85,14 @@ void get_connection()
     if(current_device->get_type()=="Switch")
     {
         std::cout<<dynamic_cast<Switch*>(current_device.get())->get_connection_address().get_address()<<std::endl;
+    }
+}
+
+void commands()
+{
+    for(auto& command : valid_commands)
+    {
+        std::cout<<command<<std::endl;
     }
 }
 }

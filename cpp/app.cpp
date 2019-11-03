@@ -9,9 +9,19 @@ app::app()
     std::unique_ptr<Network_device> k1 (new Computer("k1"));
     std::unique_ptr<Network_device> k2 (new Computer("k2"));
     std::unique_ptr<Network_device> s1(new Switch("s1"));
+    std::unique_ptr<Network_device> s2(new Switch("s2"));
     devices.add_device(k1);
     devices.add_device(k2);
     devices.add_device(s1);
+    devices.add_device(s2);
+    cm::set_device("k1");
+    cm::set_address("192.168.0.1", 26);
+    cm::set_device("k2");
+    cm::set_address("192.168.0.3", 26);
+    cm::set_device("k1");
+    cm::connect_to("s1", 0);
+    cm::set_device("k2");
+    cm::connect_to("s2", 0);
 }
 
 void app::run()

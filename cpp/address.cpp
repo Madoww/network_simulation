@@ -83,27 +83,31 @@ bool Address::set_address(std::string ip, short mask)
         m_mask = 16;
     else if(m_class == 'C')
         m_mask = 24;
-    if(m_mask > m_default_mask)
+    //if(m_mask > m_default_mask)
     {
         short temp = m_mask - m_default_mask;
         short network_each;
-        short octet = 1;
+        short octet_to_work_on = 1;
         if(m_class == 'B')
-            octet = 2;
+            octet_to_work_on = 2;
         else if(m_class == 'C')
-            octet = 3;
+            octet_to_work_on = 3;
+        if(m_mask>m_default_mask)
+            octet_to_work_on+=1;
         if(temp == 1)
         {
-            network_each = 2;
+            network_each = 128;
         }
         else
         {
-            network_each = pow(2,temp);
+            network_each = pow(2,8-temp);
         }
         sub_network_size = network_each;
-        if(octets[octet]%network_each==0)
+        std::cout<<std::count_if(octets.begin()+octet_to_work_on,octets.end(),[](short x){return x==255;})<<std::endl;
+        if(octets[octet_to_work_on]%network_each==0)
         {
-            if(std::count_if(octets.begin()+octet,octets.end(),[](short x){return x==0;})==4-(octet+1))
+            std::cout<<"Checking"<<std::endl;
+            if(std::count_if(octets.begin()+octet_to_work_on,octets.end(),[](short x){return x==0;})==4-(octet_to_work_on))
             {
                 std::cout<<"Invalid IP address :("<<std::endl;
                 m_address = backup;
