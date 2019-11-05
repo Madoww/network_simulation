@@ -27,4 +27,25 @@ protected:
     
 };
 
+class Connectable
+{
+public:
+    virtual void connect_device(const Address&, int port_id) = 0;//Check whether a port[port_id] exists and is not occupied, then connect a device.
+    virtual bool find_device(const std::string&) = 0;//Checks if a device with entered address is connected to any of the ports.
+    virtual void set_port(int id) = 0; //set the currently used port to ID.
+    virtual void add_port() = 0; //create a new port.
+    
+};
+
+class Connecting
+{
+public:
+    virtual void connect(const std::string&,int) = 0; //Check whether the entered device is connectable, if so, connect this device to it.
+    bool is_connected(){return connected;}
+    Connectable* get_connection(){return connected_to;}
+protected:
+    Connectable* connected_to;
+    bool connected = false;
+};
+
 #endif /* Network_device_hpp */

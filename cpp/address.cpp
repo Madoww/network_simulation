@@ -54,6 +54,7 @@ bool Address::set_address(std::string ip, short mask)
             m_address = backup;
             return false;
         }
+    short octet_to_work_on = 1;
     if(octets[0]<= 127)
     {
         m_class = 'A';
@@ -63,11 +64,13 @@ bool Address::set_address(std::string ip, short mask)
     {
         m_class = 'B';
         m_default_mask = 16;
+        octet_to_work_on = 2;
     }
     else if(octets[0]<=223)
     {
         m_class = 'C';
         m_default_mask = 24;
+        octet_to_work_on = 3;
     }
     else if(octets[0]<=239)
         m_class = 'D';
@@ -85,31 +88,19 @@ bool Address::set_address(std::string ip, short mask)
         m_mask = 24;
     //if(m_mask > m_default_mask)
     {
-        short temp = m_mask - m_default_mask;
-        short network_each;
-        short octet_to_work_on = 1;
-        if(m_class == 'B')
-            octet_to_work_on = 2;
-        else if(m_class == 'C')
-            octet_to_work_on = 3;
+        short bits_for_network = m_mask - m_default_mask;
         if(m_mask>m_default_mask)
             octet_to_work_on+=1;
-        if(temp == 1)
         {
-            network_each = 128;
+            sub_network_size = pow(2,8-bits_for_network);
+            if(sub_network_size==256)
+                sub_network_size = 255;
         }
-        else
+        if(octets[octet_to_work_on]%sub_network_size==0)
         {
-            network_each = pow(2,8-temp);
-        }
-        sub_network_size = network_each;
-        std::cout<<std::count_if(octets.begin()+octet_to_work_on,octets.end(),[](short x){return x==255;})<<std::endl;
-        if(octets[octet_to_work_on]%network_each==0)
-        {
-            std::cout<<"Checking"<<std::endl;
-            if(std::count_if(octets.begin()+octet_to_work_on,octets.end(),[](short x){return x==0;})==4-(octet_to_work_on))
+            if(std::count_if(octets.begin()+octet_to_work_on,octets.end(),[](short x){return x==0;})==4-(octet_to_work_on) || std::count_if(octets.begin()+octet_to_work_on,octets.end(),[](short x){return x==255;})==4-(octet_to_work_on))
             {
-                std::cout<<"Invalid IP address :("<<std::endl;
+                std::cout<<"Invalid IP address"<<std::endl;
                 m_address = backup;
                 return false;
             }
@@ -137,6 +128,15 @@ const bool Address::is_same_network(const Address& address)const
             else if(m_class == 'B')
             {
                 if(octets[0]==address.get_octets()[0] && octets[1]==address.get_octets()[1])
+                    return true;
+            }
+            else if(m_class == 'C')
+            {
+                int count = 0;
+                for(int i = 0; i<3; i++)
+                    if(octets[i]==address.get_octets()[i])
+                        count++;
+                if(count==3)
                     return true;
             }
         }

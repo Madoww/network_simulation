@@ -11,10 +11,11 @@ Computer::Computer(const std::string& name)
 
 void Computer::connect(const std::string& name,int port_id)
 {
-    if(find_device->get_type()=="Switch")
+    auto& device = find_device;
+    if(device->get_type()=="Switch")
     {
-        dynamic_cast<Switch*>(find_device.get())->get_port(port_id).set_occupied(true);
-            connected_to = dynamic_cast<Switch*>(find_device.get());
+        dynamic_cast<Connectable*>(device.get())->connect_device(Device_manager::instance().get_current_device()->get_address(),port_id);
+        connected_to = dynamic_cast<Connectable*>(find_device.get());
         connected = true;
     }
 }

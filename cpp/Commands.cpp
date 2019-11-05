@@ -12,9 +12,9 @@ std::vector<std::string>valid_commands = {"ping <address>","set_device <name>","
 void ping(const std::string& address)
 {
     Address ip;
-    if(ip.set_address(address) && dynamic_cast<Computer*>(current_device.get())->is_connected())
+    if(ip.set_address(address) && dynamic_cast<Connecting*>(current_device.get())->is_connected())
     {
-        if(dynamic_cast<Computer*>(current_device.get())->get_connection()->find_device(address) && current_device->get_address().is_same_network(ip))
+        if(dynamic_cast<Connecting*>(current_device.get())->get_connection()->find_device(address) && current_device->get_address().is_same_network(ip))
             for(int i = 0; i<1; i++)
             {
                 std::cout<<"Reply from "<<address<<std::endl;
@@ -39,32 +39,30 @@ void set_address(const std::string& address, int mask)
 }
 void set_port(int id)
 {
-    if(current_device->get_type() == "Switch")
-        dynamic_cast<Switch*>(current_device.get())->set_port(id);
+    if(dynamic_cast<Connectable*>(current_device.get()))
+        dynamic_cast<Connectable*>(current_device.get())->set_port(id);
 }
 void add_port(const std::string& name)
 {
     if(name=="")
     {
-        if(current_device->get_type() == "Switch")
+        if(dynamic_cast<Connectable*>(current_device.get()))
         {
-            dynamic_cast<Switch*>(current_device.get())->add_port();
+            dynamic_cast<Connectable*>(current_device.get())->add_port();
         }
         else
             std::cout<<"Cannot add a port"<<std::endl;
     }
-    else if(dynamic_cast<Switch*>(name_device.get()))
+    else if(dynamic_cast<Connectable*>(name_device.get()))
     {
-        static_cast<Switch*>(name_device.get())->add_port();
+        dynamic_cast<Connectable*>(name_device.get())->add_port();
     }
 }
 void connect_to(const std::string& name, int port_id)
 {
-    auto& device = Device_manager::instance().find_device(name);
-    if(device->get_type()=="Switch")
+    if(dynamic_cast<Connecting*>(current_device.get()))
     {
-        dynamic_cast<Switch*>(device.get())->connect_device(current_device->get_address(),port_id);
-        dynamic_cast<Computer*>(current_device.get())->connect(name,port_id);
+        dynamic_cast<Connecting*>(current_device.get())->connect(name,port_id);
     }
     else
         std::cout<<"Couldn't connect"<<std::endl;

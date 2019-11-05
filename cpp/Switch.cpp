@@ -59,8 +59,9 @@ void Switch::connect_device(const Address& address, int port_id)
     if(port_id<ports.size()){
         if(!ports[port_id].is_occupied())
         {
+            std::cout<<m_name<<": ";
             ports[port_id].connect_device(address);
-            //ports[port_id].set_occupied(true);
+            ports[port_id].set_occupied(true);
         }
         else
             std::cout<<"Port is occupied"<<std::endl;

@@ -4,16 +4,11 @@
 #include "Network_device.hpp"
 #include "Switch.hpp"
 
-class Computer : public Network_device
+class Computer : public Network_device, public Connecting
 {
 public:
     Computer(const std::string&);
-    void connect(const std::string&,int);
-    bool is_connected(){return connected;}
-    Switch* get_connection(){return connected_to;}
-private:
-    Switch* connected_to;
-    bool connected = false;
+    void connect(const std::string&,int)override;//Check whether the entered device is connectable, if so, connect this device to it.
 };
 
 #endif /* Computer_hpp */
