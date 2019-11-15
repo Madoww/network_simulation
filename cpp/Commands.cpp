@@ -14,7 +14,9 @@ void ping(const std::string& address)
     Address ip;
     if(ip.set_address(address) && dynamic_cast<Connecting*>(current_device.get())->is_connected())
     {
-        if(dynamic_cast<Connecting*>(current_device.get())->get_connection()->find_device(address) && current_device->get_address().is_same_network(ip))
+        //if(dynamic_cast<Connecting*>(current_device.get())->get_connection()->find_device(address).get_address().is_same_network(current_device->get_address()))
+        /*std::cout<<current_device->get_address().get_address()<<std::endl;
+        std::cout<<dynamic_cast<Connecting*>(current_device.get())->get_connection()->find_device(address).get_address()<<std::endl;*/ if(current_device->get_address().is_same_network(dynamic_cast<Connecting*>(current_device.get())->get_connection()->find_device(address)))
             for(int i = 0; i<1; i++)
             {
                 std::cout<<"Reply from "<<address<<std::endl;
@@ -67,6 +69,16 @@ void connect_to(const std::string& name, int port_id)
     else
         std::cout<<"Couldn't connect"<<std::endl;
 }
+void connect(const std::string& name1, int port_id1, const std::string& name2, int port_id2)
+{
+    const auto& device1 = dynamic_cast<Connectable*>(Device_manager::instance().find_device(name1).get());
+    const auto& device2 = dynamic_cast<Connectable*>(Device_manager::instance().find_device(name2).get());
+    if(device1 && device2)
+    {
+        device1->connect_device(Device_manager::instance().find_device(name2)->get_address(), port_id1);
+        device2->connect_device(Device_manager::instance().find_device(name1)->get_address(), port_id2);
+    }
+}
 
 void display_address()
 {
@@ -80,9 +92,9 @@ void get_type()
 }
 void get_connection()
 {
-    if(current_device->get_type()=="Switch")
+    if(dynamic_cast<Connectable*>(current_device.get()))
     {
-        std::cout<<dynamic_cast<Switch*>(current_device.get())->get_connection_address().get_address()<<std::endl;
+        std::cout<<dynamic_cast<Connectable*>(current_device.get())->get_connection_address().get_address()<<std::endl;
     }
 }
 

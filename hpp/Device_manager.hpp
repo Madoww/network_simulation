@@ -11,8 +11,10 @@ public:
     Device_manager& operator=(Device_manager&)=delete;
     void add_device(std::unique_ptr<Network_device>& device);
     void set_current_device(const std::string&);//Check if a device exists, if so, set it as currently used.
-    std::unique_ptr<Network_device>& find_device(const std::string&);
+    std::unique_ptr<Network_device>& find_device(const std::string&);//find device by name
+    std::unique_ptr<Network_device>& find_device_by_address(const std::string&);//find device by address
     const std::unique_ptr<Network_device>& get_current_device()const{return devices[current_device];}
+    
     inline static Device_manager& instance()
     {
         static Device_manager temp;

@@ -40,3 +40,12 @@ std::unique_ptr<Network_device>& Device_manager::find_device(const std::string& 
     }
     return devices[0];
 }
+std::unique_ptr<Network_device>& Device_manager::find_device_by_address(const std::string& address)
+{
+    for(auto& device : devices)
+    {
+        if(device->get_address().get_address() == address)
+            return device;
+    }
+    return devices[0];
+}

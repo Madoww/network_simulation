@@ -15,14 +15,16 @@ public:
     const short& get_defualt_mask()const{return m_default_mask;}
     const bool is_same_network(const Address&)const;//Check whether both addresses are in the same network.
     const std::vector<short>& get_octets()const{return octets;}
+    void set_other_address(const std::string&);
 private:
     std::string m_address;//Holds the address as a string.
     std::vector<short> octets;//Holds the address as separated octets.
-    std::vector<short>default_address;
     char m_class;
     short m_default_mask = 0;
     short m_mask = 0;
     short sub_network_size = 0;
+    bool error_while_creating(const std::string& message = "Invalid IP address");
+    std::string backup;
 };
 
 #endif /* address_hpp */

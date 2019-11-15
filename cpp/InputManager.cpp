@@ -14,8 +14,8 @@ InputManager::InputManager()
 void InputManager::get_input()
 {
     std::cout<<'\n'<<":>"<<current_device->get_name()<<"> ";
-    if(current_device->get_type() == "Switch")
-        std::cout<<dynamic_cast<Switch*>(current_device.get())->get_current_port_id()<<"> ";
+    if(dynamic_cast<Connectable*>(current_device.get()))
+        std::cout<<dynamic_cast<Connectable*>(current_device.get())->get_current_port_id()<<"> ";
     std::getline(std::cin,current_input);
     call_command(current_input);
 }
@@ -64,6 +64,8 @@ void InputManager::call_command(std::string& command)
         cm::set_port(atoi(arguments[1].c_str()));
     else if(function == "connect_to")
         cm::connect_to(arguments[1], atoi(arguments[2].c_str()));
+    else if(function == "connect")
+        cm::connect(arguments[1],atoi(arguments[2].c_str()),arguments[3],atoi(arguments[4].c_str()));
     else if(function == "get_connection_address")
         cm::get_connection();
     else if(function == "commands")

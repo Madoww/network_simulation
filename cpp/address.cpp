@@ -10,29 +10,23 @@ Address::Address()
 
 bool Address::set_address(std::string ip, short mask)
 {
-    std::string backup = m_address;
+    backup = m_address;
     m_address = ip;
     m_mask = 0;
     octets.clear();
     if(std::find_if(ip.cbegin(),ip.cend(),[](unsigned char c){if(c!='.')return !std::isdigit(c);else return false;})!=ip.end())
     {
-        std::cout<<"Invalid IP address"<<std::endl;
-        m_address = backup;
-        return false;
+        return error_while_creating();
     }
     if(std::count_if(ip.cbegin(),ip.cend(),[](char c){return c=='.';})!=3)
     {
-        std::cout<<"Invalid IP address"<<std::endl;
-        m_address = backup;
-        return false;
+        return error_while_creating();
     }
     for(int i = 0; i<ip.size()-1; i++)
     {
         if(ip[i]=='.'&&ip[i+1]=='.')
         {
-            std::cout<<"Invalid IP address"<<std::endl;
-            m_address = backup;
-            return false;
+            return error_while_creating();
         }
     }
     std::string temp_address = "";
@@ -50,9 +44,7 @@ bool Address::set_address(std::string ip, short mask)
     }
         if(std::find_if(octets.begin(),octets.end(),[](short a){return a>255||a<0;})!=octets.end())
         {
-            std::cout<<"Invalid IP address :("<<std::endl;
-            m_address = backup;
-            return false;
+            return error_while_creating();
         }
     short octet_to_work_on = 1;
     if(octets[0]<= 127)
@@ -91,24 +83,51 @@ bool Address::set_address(std::string ip, short mask)
         short bits_for_network = m_mask - m_default_mask;
         if(m_mask>m_default_mask)
             octet_to_work_on+=1;
+        if(m_mask<m_default_mask)
+            return error_while_creating("Masks lower than default masks are not supported");
         {
             sub_network_size = pow(2,8-bits_for_network);
             if(sub_network_size==256)
                 sub_network_size = 255;
         }
+        if(m_mask>m_default_mask && m_class == 'C')
+            octet_to_work_on--;
         if(octets[octet_to_work_on]%sub_network_size==0)
+        {
+            if(m_class == 'C')
+            {
+                return error_while_creating();
+            }
+            if(std::count_if(octets.begin()+octet_to_work_on,octets.end(),[](short x){return x==0;})==4-(octet_to_work_on) || std::count_if(octets.begin()+octet_to_work_on,octets.end(),[](short x){return x==255;})==4-(octet_to_work_on))
+            {
+                return error_while_creating();
+            }
+        }
+        if(m_mask>m_default_mask && m_class == 'C')
+            octet_to_work_on++;
+        if((octets[octet_to_work_on-1])%(sub_network_size-1)==0)
         {
             if(std::count_if(octets.begin()+octet_to_work_on,octets.end(),[](short x){return x==0;})==4-(octet_to_work_on) || std::count_if(octets.begin()+octet_to_work_on,octets.end(),[](short x){return x==255;})==4-(octet_to_work_on))
             {
-                std::cout<<"Invalid IP address"<<std::endl;
+                return error_while_creating();
+            }
+        }
+        /*if(octets[octet_to_work_on-1]%(sub_network_size)==0)
+        {
+            if(std::count_if(octets.begin()+octet_to_work_on,octets.end(),[](short x){return x==255;})==4-(octet_to_work_on))
+            {
+                std::cout<<"Invalid IP address :("<<std::endl;
                 m_address = backup;
                 return false;
             }
-        }
+        }*/
     }
     return true;
 }
-
+void Address::set_other_address(const std::string& name)
+{
+    m_address = name;
+}
 const std::string& Address::get_address()const
 {
     return m_address;
@@ -116,7 +135,7 @@ const std::string& Address::get_address()const
 
 const bool Address::is_same_network(const Address& address)const
 {
-    if(m_class == address.get_class() && m_mask == address.get_mask() && m_default_mask == address.get_defualt_mask())
+    if(m_class == address.get_class() && m_mask == address.get_mask() && m_default_mask == address.get_defualt_mask() && m_mask == m_default_mask)
     {
         if(m_mask == m_default_mask)
         {
@@ -174,5 +193,12 @@ const bool Address::is_same_network(const Address& address)const
         std::cout<<"Addresses have different masks."<<std::endl;
         return false;
     }
+    return false;
+}
+
+bool Address::error_while_creating(const std::string& message)
+{
+    std::cout<<message<<std::endl;
+    m_address = backup;
     return false;
 }
