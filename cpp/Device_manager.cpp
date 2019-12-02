@@ -49,3 +49,14 @@ std::unique_ptr<Network_device>& Device_manager::find_device_by_address(const st
     }
     return devices[0];
 }
+std::unique_ptr<Network_device>& Device_manager::find_device_by_type(const std::string& type)
+{
+    for(auto& device : devices)
+    {
+        if(device->get_type() == Device_type::Server)
+        {
+            return device;
+        }
+    }
+    return devices[0];
+}

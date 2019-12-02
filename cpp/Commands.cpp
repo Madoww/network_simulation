@@ -3,6 +3,8 @@
 #include <algorithm>
 #include "address.hpp"
 #include "Switch.hpp"
+#include "Server.hpp"
+#include "Performance_tester.hpp"
 #define current_device Device_manager::instance().get_current_device()
 #define name_device Device_manager::instance().find_device(name)
 
@@ -11,12 +13,11 @@ std::vector<std::string>valid_commands = {"ping <address>","set_device <name>","
 ,"set_port <port_id>","connect_to <name,port_id>","get_connection_address"};
 void ping(const std::string& address)
 {
+    perform_test();
     Address ip;
     if(ip.set_address(address) && dynamic_cast<Connecting*>(current_device.get())->is_connected())
     {
-        //if(dynamic_cast<Connecting*>(current_device.get())->get_connection()->find_device(address).get_address().is_same_network(current_device->get_address()))
-        /*std::cout<<current_device->get_address().get_address()<<std::endl;
-        std::cout<<dynamic_cast<Connecting*>(current_device.get())->get_connection()->find_device(address).get_address()<<std::endl;*/ if(current_device->get_address().is_same_network(dynamic_cast<Connecting*>(current_device.get())->get_connection()->find_device(address)))
+        if(current_device->get_address().is_same_network(dynamic_cast<Connecting*>(current_device.get())->get_connection()->find_device(address)))
             for(int i = 0; i<1; i++)
             {
                 std::cout<<"Reply from "<<address<<std::endl;
@@ -35,9 +36,36 @@ void set_device(const std::string& device)
 void set_address(const std::string& address, int mask)
 {
     if(Device_manager::instance().get_current_device()->get_name()!="")
+    {
+        if(current_device->is_dhcp)
+        {
+            dynamic_cast<Server*>(Device_manager::instance().find_device_by_type("Server").get())->free_address(current_device->get_address().get_address());
+        }
         Device_manager::instance().get_current_device()->set_address(address,mask);
+    }
     else
         std::cout<<"No device set"<<'\n';
+}
+void set_dhcp_range(const std::string& first_address,short mask, short addresses_amount)
+{
+    if(current_device->get_type()==Device_type::Server)
+    {
+        dynamic_cast<Server*>(current_device.get())->set_dhcp_range(first_address, mask, addresses_amount);
+    }
+}
+void get_dhcp_users()
+{
+    dynamic_cast<Server*>(Device_manager::instance().find_device_by_type("Server").get())->get_dhcp_users();
+}
+void set_address_dhcp()
+{
+    //current_device->set_address(dynamic_cast<Server*>(Device_manager::instance().find_device(server_name).get())->get_dhcp().get_address());
+    //current_device->set_address(dynamic_cast<Server*>(dynamic_cast<Connecting*>(current_device.get())->get_connection()->find_device(server_name))->get_dhcp());
+        if(dynamic_cast<Connectable*>(Device_manager::instance().find_device_by_type("Server").get())->find_device(current_device->get_address().get_address()).get_address()==current_device->get_address().get_address())
+        {
+            current_device->set_address(dynamic_cast<Server*>(Device_manager::instance().find_device_by_type("Server").get())->get_dhcp().get_address());
+        }
+    
 }
 void set_port(int id)
 {
@@ -86,9 +114,15 @@ void display_address()
     else
         std::cout<<"No device set"<<'\n';
 }
+void get_mask()
+{
+    if(Device_manager::instance().get_current_device()->get_name()!="") std::cout<<Device_manager::instance().get_current_device()->get_address().get_mask()<<'\n';
+    else
+        std::cout<<"No device set"<<'\n';
+}
 void get_type()
 {
-    std::cout<<Device_manager::instance().get_current_device()->get_type()<<std::endl;
+    //std::cout<<Device_manager::instance().get_current_device()->get_type()<<std::endl;
 }
 void get_connection()
 {

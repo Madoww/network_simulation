@@ -9,6 +9,7 @@ enum class Device_type
 {
     Computer = 0,
     Switch,
+    Server,
     Router
 };
 
@@ -19,7 +20,8 @@ public:
     virtual const Address& get_address()const;
     virtual void set_address(const std::string&, short mask = -1);//attempt to set the device's address
     virtual const std::string& get_name(){return m_name;}
-    virtual const std::string& get_type();
+    virtual const Device_type& get_type();
+    bool is_dhcp = false;
     virtual ~Network_device(){}
 protected:
     Address ip;
@@ -46,6 +48,7 @@ protected:
 private:
     friend class Connectable;
     friend class Switch;
+    friend class Server;
     bool occupied = false;
 };
 
@@ -53,7 +56,7 @@ class Connectable : public Network_device
 {
 public:
     virtual void connect_device(const Address&, int port_id);//Check whether a port[port_id] exists and is not occupied, then connect a device.
-    virtual const Address& find_device(const std::string&);//Checks if a device with entered address is connected to any of the ports recursively.
+    const Address& find_device(const std::string&);//Checks if a device with entered address is connected to any of the ports recursively.
     virtual void set_port(int id); //set the currently used port to ID.
     virtual void add_port(); //create a new port.
     int get_current_port_id(){return ports[current_port].get_id();}

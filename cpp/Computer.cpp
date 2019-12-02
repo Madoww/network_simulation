@@ -6,6 +6,8 @@
 Computer::Computer(const std::string& name)
 {
     m_name = name;
+    if(m_name == "")
+        ip.set_other_address("");
     m_type = Device_type::Computer;
 }
 

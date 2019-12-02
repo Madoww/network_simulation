@@ -20,9 +20,9 @@ const Address& Network_device::get_address()const
 {
     return ip;
 }
-const std::string& Network_device::get_type()
+const Device_type& Network_device::get_type()
 {
-    return device_types[static_cast<int>(m_type)];
+    return m_type;
 }
 
 void Connectable::connect_device(const Address& address, int port_id)
@@ -60,11 +60,6 @@ const Address& Connectable::get_connection_address()const
     return ports[current_port].get_connection_address();
 }
 
-const Address& Connectable::find_device(const std::string& address)
-{
-    std::cout<<"Device doesn't support finding a device"<<std::endl;
-}
-
 Port& Connectable::get_connection_port(const std::string& address)
 {
     for(auto& port : ports)
@@ -95,4 +90,63 @@ void Connecting::connect(const std::string& name,int port_id)
         connected_to = dynamic_cast<Connectable*>(find_devices.get());
         connected = true;
     }
+}
+
+const Address& Connectable::find_device(const std::string& address)
+{
+    static int searched_for = 0;
+    static std::vector<std::string>devices_checked;
+    static Connectable* base_switch = nullptr;
+    static Connectable* previous_switch = nullptr;
+    if(base_switch == nullptr)
+    {
+        base_switch = this;
+        if(Device_manager::instance().find_device_by_address(address)->get_name()=="")
+        {
+            base_switch = nullptr;
+            searched_for = 0;
+            return Address();
+        }
+    }
+    if(previous_switch == nullptr)
+        previous_switch = this;
+    if(searched_for == 0)
+    {
+        devices_checked.push_back(this->get_address().get_address());
+    }
+    searched_for++;
+    if(searched_for>50)
+    {
+        std::cout<<"Reached max distance"<<std::endl;
+        searched_for = 0;
+        devices_checked.clear();
+        previous_switch = nullptr;
+        base_switch = nullptr;
+        return Address();
+    }
+    for(auto& port : ports)
+    {
+        if(port.get_connection_address().get_address()==address)
+        {
+            devices_checked.clear();
+            searched_for = 0;
+            base_switch = nullptr;
+            previous_switch = nullptr;
+            return port.get_connection_address();
+        }
+    }
+    for(auto& port : ports)
+    {
+        if(Device_manager::instance().find_device(port.get_connection_address().get_address())->get_type()==Device_type::Switch && std::find(devices_checked.begin(),devices_checked.end(),Device_manager::instance().find_device(port.get_connection_address().get_address())->get_name())==devices_checked.end() && Device_manager::instance().find_device(port.get_connection_address().get_address())->get_name() != previous_switch->get_name())
+        {
+            previous_switch = this;
+            return dynamic_cast<Switch*>(Device_manager::instance().find_device(port.get_connection_address().get_address()).get())->find_device(address);
+        }
+    }
+    previous_switch = nullptr;
+    devices_checked.push_back(this->get_address().get_address());
+    return base_switch->find_device(address);
+    devices_checked.clear();
+    searched_for = 0;
+    return Address();
 }

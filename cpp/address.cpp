@@ -81,6 +81,11 @@ bool Address::set_address(std::string ip, short mask)
     //if(m_mask > m_default_mask)
     {
         short bits_for_network = m_mask - m_default_mask;
+        while(bits_for_network>8)
+        {
+            bits_for_network-=8;
+            octet_to_work_on++;
+        }
         if(m_mask>m_default_mask)
             octet_to_work_on+=1;
         if(m_mask<m_default_mask)
@@ -90,11 +95,11 @@ bool Address::set_address(std::string ip, short mask)
             if(sub_network_size==256)
                 sub_network_size = 255;
         }
-        if(m_mask>m_default_mask && m_class == 'C')
+        if(m_mask > 24)
             octet_to_work_on--;
         if(octets[octet_to_work_on]%sub_network_size==0)
         {
-            if(m_class == 'C')
+            if(m_mask > 24)
             {
                 return error_while_creating();
             }
@@ -103,7 +108,7 @@ bool Address::set_address(std::string ip, short mask)
                 return error_while_creating();
             }
         }
-        if(m_mask>m_default_mask && m_class == 'C')
+        if(m_mask> 24)
             octet_to_work_on++;
         if((octets[octet_to_work_on-1])%(sub_network_size-1)==0)
         {
@@ -112,15 +117,6 @@ bool Address::set_address(std::string ip, short mask)
                 return error_while_creating();
             }
         }
-        /*if(octets[octet_to_work_on-1]%(sub_network_size)==0)
-        {
-            if(std::count_if(octets.begin()+octet_to_work_on,octets.end(),[](short x){return x==255;})==4-(octet_to_work_on))
-            {
-                std::cout<<"Invalid IP address :("<<std::endl;
-                m_address = backup;
-                return false;
-            }
-        }*/
     }
     return true;
 }
@@ -190,7 +186,6 @@ const bool Address::is_same_network(const Address& address)const
     }
     else
     {
-        std::cout<<"Addresses have different masks."<<std::endl;
         return false;
     }
     return false;

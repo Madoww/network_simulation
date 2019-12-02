@@ -1,7 +1,7 @@
 #include "app.hpp"
 #include "Computer.hpp"
 #include "Switch.hpp"
-#include "Router.hpp"
+#include "Server.hpp"
 #include <iostream>
 
 app::app()
@@ -15,7 +15,8 @@ app::app()
     std::unique_ptr<Network_device> s3(new Switch("s3"));
     std::unique_ptr<Network_device> s4(new Switch("s4"));
     std::unique_ptr<Network_device> s5(new Switch("s5"));
-    std::unique_ptr<Network_device> r1(new Router("r1"));
+    std::unique_ptr<Network_device> sv(new Server("server"));
+    dynamic_cast<Server*>(sv.get())->set_dhcp_range("192.168.0.1", 24, 20);
     devices.add_device(k1);
     devices.add_device(k2);
     devices.add_device(s1);
@@ -24,7 +25,7 @@ app::app()
     devices.add_device(s4);
     devices.add_device(s5);
     devices.add_device(k3);
-    devices.add_device(r1);
+    devices.add_device(sv);
     cm::set_device("k1");
     cm::set_address("192.168.0.130");
     cm::set_device("k2");
@@ -37,7 +38,6 @@ app::app()
     cm::add_port("s2");
     cm::add_port("s3");
     cm::add_port("s3");
-    cm::add_port("r1");
     cm::connect_to("s1", 0);
     cm::set_device("k2");
     cm::connect_to("s2", 1);
@@ -55,8 +55,16 @@ app::app()
     cm::connect("s3", 1, "s2", 5);
     cm::connect("s4",1,"s3",2);
     cm::connect("s5",1,"s3",3);
+    cm::connect("server",0,"s5",3);
     //cm::connect("s3",2,"r1",1);
+    cm::set_device("server");
+    cm::set_dhcp_range("192.168.0.1", 24, 30);
+    cm::set_device("k1");
+    cm::set_address_dhcp();
     cm::set_device("k2");
+    cm::set_address_dhcp();
+    cm::set_device("k3");
+    cm::set_address_dhcp();
 }
 
 void app::run()

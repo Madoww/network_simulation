@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 class Address
 {
@@ -16,6 +17,20 @@ public:
     const bool is_same_network(const Address&)const;//Check whether both addresses are in the same network.
     const std::vector<short>& get_octets()const{return octets;}
     void set_other_address(const std::string&);
+    Address operator+(short num)
+    {
+        Address temp;
+        std::string add;
+        short last_octet = octets[3]+num;
+        for(int i = 0; i<3; i++)
+        {
+            add+=std::to_string(octets[i]);
+            add+=".";
+        }
+        add+=std::to_string(last_octet);
+        temp.set_address(add,m_mask);
+        return temp;
+    }
 private:
     std::string m_address;//Holds the address as a string.
     std::vector<short> octets;//Holds the address as separated octets.
