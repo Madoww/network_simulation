@@ -49,6 +49,9 @@ private:
     friend class Connectable;
     friend class Switch;
     friend class Server;
+	friend class DHCP;
+	friend class DNS;
+    friend class Web_server;
     bool occupied = false;
 };
 
@@ -56,9 +59,10 @@ class Connectable : public Network_device
 {
 public:
     virtual void connect_device(const Address&, int port_id);//Check whether a port[port_id] exists and is not occupied, then connect a device.
-    const Address& find_device(const std::string&);//Checks if a device with entered address is connected to any of the ports recursively.
+    virtual const Address& find_device(const std::string&);//Checks if a device with entered address is connected to any of the ports recursively.
     virtual void set_port(int id); //set the currently used port to ID.
     virtual void add_port(); //create a new port.
+	void get_port_info();
     int get_current_port_id(){return ports[current_port].get_id();}
     const Address& get_connection_address()const;//Returns an address connected to a currently used port.
     Port& get_port(int id){return ports[id];}

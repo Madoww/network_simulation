@@ -44,42 +44,48 @@ void InputManager::call_command(std::string& command)
             current_argument = "";
         }
     }
-    if(function == "ping")
-        cm::ping(arguments[1]);
-    else if(function == "set_device")
-        cm::set_device(arguments[1]);
-    else if(function == "set_address")
-    {
-        if(arguments[2]=="")
-            arguments[2]="0";
-        cm::set_address(arguments[1],atoi(arguments[2].c_str()));
-    }
-    else if(function == "set_dhcp_range")
-    {
-        cm::set_dhcp_range(arguments[1], atoi(arguments[2].c_str()), atoi(arguments[3].c_str()));
-    }
-    else if(function == "set_address_dhcp")
-    {
-        cm::set_address_dhcp();
-    }
-    else if(function == "get_dhcp_users")
-        cm::get_dhcp_users();
-    else if(function == "get_address")
-        cm::display_address();
-    else if(function == "get_mask")
-        cm::get_mask();
-    else if(function == "get_type")
-        cm::get_type();
-    else if(function == "add_port")
-        cm::add_port(arguments[1]);
-    else if(function == "set_port")
-        cm::set_port(atoi(arguments[1].c_str()));
-    else if(function == "connect_to")
-        cm::connect_to(arguments[1], atoi(arguments[2].c_str()));
-    else if(function == "connect")
-        cm::connect(arguments[1],atoi(arguments[2].c_str()),arguments[3],atoi(arguments[4].c_str()));
-    else if(function == "get_connection_address")
-        cm::get_connection();
+	if (function == "ping")
+		cm::ping(arguments[1]);
+	else if (function == "set_device")
+		cm::set_device(arguments[1]);
+	else if (function == "set_address")
+	{
+		if (arguments.size() == 2)
+			arguments.emplace_back("0");
+		cm::set_address(arguments[1], atoi(arguments[2].c_str()));
+	}
+	else if (function == "set_dhcp_range")
+	{
+		cm::set_dhcp_range(arguments[1], atoi(arguments[2].c_str()), atoi(arguments[3].c_str()));
+	}
+	else if (function == "set_address_dhcp")
+	{
+		cm::set_address_dhcp();
+	}
+	else if (function == "get_dhcp_users")
+		cm::get_dhcp_users();
+	else if (function == "get_address")
+		cm::display_address();
+	else if (function == "get_mask")
+		cm::get_mask();
+	else if (function == "get_type")
+		cm::get_type();
+	else if (function == "add_port")
+		cm::add_port(arguments[1]);
+    else if(function == "add_website")
+        cm::add_website(arguments[1], arguments[2]);
+	else if (function == "set_port")
+		cm::set_port(atoi(arguments[1].c_str()));
+    else if(function == "add_record")
+        cm::add_record(arguments[1], arguments[2]);
+	else if (function == "connect_to")
+		cm::connect_to(arguments[1], atoi(arguments[2].c_str()));
+	else if (function == "connect")
+		cm::connect(arguments[1], atoi(arguments[2].c_str()), arguments[3], atoi(arguments[4].c_str()));
+	else if (function == "get_connection_address")
+		cm::get_connection();
+	else if (function == "get_port_info")
+		cm::get_port_info();
     else if(function == "commands")
         cm::commands();
     else

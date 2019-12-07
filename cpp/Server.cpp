@@ -5,7 +5,7 @@
 
 int Server::searched_for = 0;
 
-Server::Server(const std::string& name)
+DHCP::DHCP(const std::string& name)
 {
     ports.emplace_back(Port(ports.size()));
     m_name = name;
@@ -13,7 +13,7 @@ Server::Server(const std::string& name)
     m_type = Device_type::Server;
 }
 
-void Server::set_address(const std::string& address, short mask)
+void DHCP::set_address(const std::string& address, short mask)
 {
     ports[current_port].set_address(address,mask);
 }
@@ -37,6 +37,8 @@ void DHCP::set_dhcp_range(const std::string& first_address,short mask, short add
 Address DHCP::get_dhcp()
 {
     if(used_addresses<dhcp_range){
+		if (std::find(users.begin(), users.end(), current_device.get()) != users.end())
+			return current_device->get_address();
     Address temp;
     temp.set_address(dhcp_address.get_address(),dhcp_address.get_mask());
         int tester = 0;

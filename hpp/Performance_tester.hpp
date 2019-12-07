@@ -12,7 +12,7 @@
 #include <chrono>
 #include <string_view>
 
-
+//Measures the life time of *this* object. Use "perform_test()" at the beggining of the scope to measure its time of execution. Prints the name of a function it's created in.
 class test_performance
 {
 public:

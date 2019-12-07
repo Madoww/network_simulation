@@ -1,7 +1,6 @@
 #ifndef app_hpp
 #define app_hpp
 
-#include <SFML/Graphics.hpp>
 #include "InputManager.hpp"
 #include "Device_manager.hpp"
 
@@ -21,7 +20,6 @@ private:
     app();
     InputManager& input = InputManager::instance();
     Device_manager& devices = Device_manager::instance();
-    sf::RenderWindow m_window;
 };
 
 #endif /* app_hpp */

@@ -1,5 +1,6 @@
 #include "Network_device.hpp"
 #include "Device_manager.hpp"
+#include "Server.hpp"
 #include <iostream>
 #define find_devices Device_manager::instance().find_device(name)
 
@@ -51,7 +52,7 @@ void Connectable::set_port(int id)
 
 void Connectable::add_port()
 {
-    std::cout<<"Port number: "<<ports.size()<<" successfully added"<<std::endl;
+    //std::cout<<"Port number: "<<ports.size()<<" successfully added"<<std::endl;
     ports.emplace_back(Port(ports.size()));
 }
 
@@ -69,6 +70,14 @@ Port& Connectable::get_connection_port(const std::string& address)
             return port;
         }
     }
+}
+
+void Connectable::get_port_info()
+{
+	for (int i = 0; i < ports.size(); i++)
+	{
+		std::cout << i << ": " << ports[i].get_connection_address().get_address() << std::endl;
+	}
 }
 
 void Port::set_id(int id)
@@ -94,6 +103,7 @@ void Connecting::connect(const std::string& name,int port_id)
 
 const Address& Connectable::find_device(const std::string& address)
 {
+    //std::cout<<this->get_name()<<std::endl;
     static int searched_for = 0;
     static std::vector<std::string>devices_checked;
     static Connectable* base_switch = nullptr;
@@ -101,12 +111,12 @@ const Address& Connectable::find_device(const std::string& address)
     if(base_switch == nullptr)
     {
         base_switch = this;
-        if(Device_manager::instance().find_device_by_address(address)->get_name()=="")
+        /*if(Device_manager::instance().find_device_by_address(address)->get_name()=="")
         {
             base_switch = nullptr;
             searched_for = 0;
             return Address();
-        }
+        }*/
     }
     if(previous_switch == nullptr)
         previous_switch = this;
@@ -117,7 +127,6 @@ const Address& Connectable::find_device(const std::string& address)
     searched_for++;
     if(searched_for>50)
     {
-        std::cout<<"Reached max distance"<<std::endl;
         searched_for = 0;
         devices_checked.clear();
         previous_switch = nullptr;
@@ -128,6 +137,8 @@ const Address& Connectable::find_device(const std::string& address)
     {
         if(port.get_connection_address().get_address()==address)
         {
+            if(auto dns = dynamic_cast<DNS*>(this))
+                return base_switch->find_device(dns->find_record(address));
             devices_checked.clear();
             searched_for = 0;
             base_switch = nullptr;
@@ -137,10 +148,10 @@ const Address& Connectable::find_device(const std::string& address)
     }
     for(auto& port : ports)
     {
-        if(Device_manager::instance().find_device(port.get_connection_address().get_address())->get_type()==Device_type::Switch && std::find(devices_checked.begin(),devices_checked.end(),Device_manager::instance().find_device(port.get_connection_address().get_address())->get_name())==devices_checked.end() && Device_manager::instance().find_device(port.get_connection_address().get_address())->get_name() != previous_switch->get_name())
+        if((Device_manager::instance().find_device(port.get_connection_address().get_address())->get_type()==Device_type::Switch || Device_manager::instance().find_device(port.get_connection_address().get_address())->get_type() == Device_type::Server) && std::find(devices_checked.begin(),devices_checked.end(),Device_manager::instance().find_device(port.get_connection_address().get_address())->get_name())==devices_checked.end() && Device_manager::instance().find_device(port.get_connection_address().get_address())->get_name() != previous_switch->get_name())
         {
             previous_switch = this;
-            return dynamic_cast<Switch*>(Device_manager::instance().find_device(port.get_connection_address().get_address()).get())->find_device(address);
+            return dynamic_cast<Connectable*>(Device_manager::instance().find_device(port.get_connection_address().get_address()).get())->find_device(address);
         }
     }
     previous_switch = nullptr;
