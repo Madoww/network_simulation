@@ -4,6 +4,7 @@
 #include "Server.hpp"
 #include <iostream>
 
+
 app::app()
 {
     std::unique_ptr<Network_device> k1 (new Computer("k1"));
@@ -14,11 +15,11 @@ app::app()
     std::unique_ptr<Network_device> s3(new Switch("s3"));
     std::unique_ptr<Network_device> s4(new Switch("s4"));
     std::unique_ptr<Network_device> s5(new Switch("s5"));
-    std::unique_ptr<Network_device> sv(new DHCP("server"));
+    std::unique_ptr<Network_device> sv(new Server("server"));
 	std::unique_ptr<Network_device> dns(new DNS("dns"));
     std::unique_ptr<Network_device> web(new Web_server("web"));
     dynamic_cast<Web_server*>(web.get())->create_website(Website("192.168.0.10","Data"));
-    dynamic_cast<DHCP*>(sv.get())->set_dhcp_range("192.168.0.1", 24, 20);
+    //dynamic_cast<DHCP*>(sv.get())->set_dhcp_range("192.168.0.1", 24, 20);
     dynamic_cast<DNS*>(dns.get())->add_record(DNS_record("wp.pl","192.168.0.10"));
     //dynamic_cast<DNS*>(dns.get())->add_record(DNS_record("onet.pl","192.168.0.11"));
     devices.add_device(k1);
@@ -72,13 +73,15 @@ app::app()
     cm::connect("web",0,"server",3);
     //cm::connect("s3",2,"r1",1);
     cm::set_device("server");
+	cm::install_service("dhcp", "dhcpserv");
+	cm::set_device("dhcpserv");
     cm::set_dhcp_range("192.168.0.1", 24, 30);
     cm::set_device("k1");
     cm::set_address_dhcp();
     cm::set_device("k2");
-    cm::set_address_dhcp();
-    cm::set_device("k3");
-    cm::set_address_dhcp();
+    //cm::set_address_dhcp();
+    cm::set_device("server");
+    //cm::set_address_dhcp();
 }
 
 void app::run()

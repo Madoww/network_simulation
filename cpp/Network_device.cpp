@@ -3,6 +3,7 @@
 #include "Server.hpp"
 #include <iostream>
 #define find_devices Device_manager::instance().find_device(name)
+#define server_service_type Device_manager::instance().find_device(port.get_connection_address().get_address())->get_type()
 
 static std::vector<std::string> device_types = {"Computer","Switch"};
 
@@ -103,6 +104,10 @@ void Connecting::connect(const std::string& name,int port_id)
 
 const Address& Connectable::find_device(const std::string& address)
 {
+	if (address == "")
+	{
+		return Address();
+	}
     //std::cout<<this->get_name()<<std::endl;
     static int searched_for = 0;
     static std::vector<std::string>devices_checked;
@@ -148,7 +153,7 @@ const Address& Connectable::find_device(const std::string& address)
     }
     for(auto& port : ports)
     {
-        if((Device_manager::instance().find_device(port.get_connection_address().get_address())->get_type()==Device_type::Switch || Device_manager::instance().find_device(port.get_connection_address().get_address())->get_type() == Device_type::Server) && std::find(devices_checked.begin(),devices_checked.end(),Device_manager::instance().find_device(port.get_connection_address().get_address())->get_name())==devices_checked.end() && Device_manager::instance().find_device(port.get_connection_address().get_address())->get_name() != previous_switch->get_name())
+        if((Device_manager::instance().find_device(port.get_connection_address().get_address())->get_type()==Device_type::Switch || server_service_type == Device_type::Server || server_service_type == Device_type::DNS || server_service_type == Device_type::WEB) && std::find(devices_checked.begin(),devices_checked.end(),Device_manager::instance().find_device(port.get_connection_address().get_address())->get_name())==devices_checked.end() && Device_manager::instance().find_device(port.get_connection_address().get_address())->get_name() != previous_switch->get_name())
         {
             previous_switch = this;
             return dynamic_cast<Connectable*>(Device_manager::instance().find_device(port.get_connection_address().get_address()).get())->find_device(address);

@@ -15,7 +15,17 @@ class Server : public Connectable
 public:
 	Server(const std::string&);
 	void set_address(const std::string&, short mask = -1)override;
+	void install_dhcp() { dhcp_enabled = true; }
+	void install_dns() { dns_enabled = true; }
+	void install_web() { web_enabled = true; }
+	void create_website(const Website&);
+	void add_record(const DNS_record&);
+	void set_dhcp_range(const std::string&, short mask, short address_amount);
+	void get_dhcp_users();
 private:
+	bool dhcp_enabled = false;
+	bool dns_enabled = false;
+	bool web_enabled = false;
 	static int searched_for;
 };
 
@@ -27,7 +37,6 @@ public:
     void free_address(const std::string&);//removes the entered address from the active addresses list.
     void get_dhcp_users();//Prints all devices using a particular DHCP server.
     Address get_dhcp();//Returns a free address from the range. If no address is free, an empty one is returned.
-	void set_address(const std::string&, short mask = -1)override;
 protected:
     Address dhcp_address;
     short dhcp_range = 1;

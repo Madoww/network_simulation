@@ -53,7 +53,7 @@ std::unique_ptr<Network_device>& Device_manager::find_device_by_type(const std::
 {
     for(auto& device : devices)
     {
-        if(device->get_type() == Device_type::Server)
+        if(device->get_type() == Device_type::DHCP)
         {
             return device;
         }

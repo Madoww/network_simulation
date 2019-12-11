@@ -19,6 +19,9 @@ void get_dhcp_users();//If current_device is a DHCP server, prints all its conne
 void add_port(const std::string& name = "");//Add a port to a currently used device (Must support ports).
 void add_website(const std::string& address, const std::string& data);//If current_device is a web_server, add a web site to it.
 void add_record(const std::string& name, const std::string& address);//If current_device is a DNS, add a record to id.
+void add_device(const std::string& type,const std::string& name);
+
+void install_service(const std::string&, const std::string&);
 
 void display_address();//Print address of current_device.
 void get_mask();//Print mask of current_device.

@@ -70,20 +70,31 @@ void set_address_dhcp()
 	//current_device->set_address(dynamic_cast<Server*>(dynamic_cast<Connecting*>(current_device.get())->get_connection()->find_device(server_name))->get_dhcp());
 	if (dynamic_cast<Connectable*>(Device_manager::instance().find_device_by_type("Server").get())->find_device(current_device->get_address().get_address()).get_address() == current_device->get_address().get_address())
 	{
-		current_device->set_address(dynamic_cast<DHCP*>(Device_manager::instance().find_device_by_type("Server").get())->get_dhcp().get_address());
+		current_device->set_address(dynamic_cast<DHCP*>(Device_manager::instance().find_device_by_type("DHCP").get())->get_dhcp().get_address());
 	}
 
 }
 void set_dhcp_range(const std::string& first_address,short mask, short addresses_amount)
 {
-    if(current_device->get_type()==Device_type::Server)
+    if(current_device->get_type()==Device_type::DHCP)
     {
         dynamic_cast<DHCP*>(current_device.get())->set_dhcp_range(first_address, mask, addresses_amount);
     }
+	if (auto server = dynamic_cast<Server*>(current_device.get()))
+	{
+		server->set_dhcp_range(first_address, mask, addresses_amount);
+	}
 }
 void get_dhcp_users()
 {
-    dynamic_cast<DHCP*>(Device_manager::instance().find_device_by_type("Server").get())->get_dhcp_users();
+	if (current_device->get_type() == Device_type::DHCP)
+	{
+		dynamic_cast<DHCP*>(current_device.get())->get_dhcp_users();
+	}
+	if (auto server = dynamic_cast<Server*>(current_device.get()))
+	{
+		server->get_dhcp_users();
+	}
 }
 
 void set_port(int id)
@@ -114,6 +125,10 @@ void add_website(const std::string& address, const std::string& data)
     {
         web_server->create_website(Website(address,data));
     }
+	if (auto server = dynamic_cast<Server*>(current_device.get()))
+	{
+		server->create_website(Website(address, data));
+	}
 }
 void add_record(const std::string& name, const std::string& address)
 {
@@ -121,6 +136,55 @@ void add_record(const std::string& name, const std::string& address)
     {
         dns_server->add_record(DNS_record(name,address));
     }
+	if (auto server = dynamic_cast<Server*>(current_device.get()))
+	{
+		server->add_record(DNS_record(name, address));
+	}
+}
+void add_device(const std::string& type, const std::string& name)
+{
+	std::unique_ptr<Network_device> temp;
+	if(type == "computer")
+	{
+		temp = std::make_unique<Computer>(name);
+	}
+	else if (type == "switch")
+		temp = std::make_unique<Switch>(name);
+	else if (type == "server")
+		temp = std::make_unique<Server>(name);
+	if (temp.get() != nullptr)
+	{
+		std::cout << "Device added successfully" << std::endl;
+		Device_manager::instance().add_device(temp);
+	}
+	else
+		std::cout << "Failed to add a device" << std::endl;
+}
+void install_service(const std::string& service_name, const std::string& device_name)
+{
+	if(current_device->get_type() == Device_type::Server)
+	{
+		std::unique_ptr<Network_device> temp;
+		auto server = dynamic_cast<Server*>(current_device.get());
+		if (service_name == "dns")
+		{
+			temp = std::make_unique<DNS>(device_name);
+			server->install_dns();
+		}
+		else if (service_name == "dhcp")
+		{
+			temp = std::make_unique<DHCP>(device_name);
+			server->install_dhcp();
+		}
+		else if (service_name == "web_server")
+		{
+			temp = std::make_unique<Web_server>(device_name);
+			server->install_web();
+		}
+		Device_manager::instance().add_device(temp);
+		server->add_port();
+		connect(current_device->get_name(), server->get_last_port_id(), device_name, 0);
+	}
 }
 
 void connect_to(const std::string& name, int port_id)

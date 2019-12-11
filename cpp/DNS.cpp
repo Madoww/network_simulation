@@ -22,7 +22,7 @@ const std::string& DNS::find_record(const std::string& name)
     for(auto& record : records)
     {
         if(record.get_address().get_address() == name)
-            return record.address;
+            return record.get_record_address();
     }
     return "";
 }

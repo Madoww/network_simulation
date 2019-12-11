@@ -10,6 +10,9 @@ enum class Device_type
     Computer = 0,
     Switch,
     Server,
+	DHCP,
+	DNS,
+	WEB,
     Router
 };
 
@@ -67,6 +70,7 @@ public:
     const Address& get_connection_address()const;//Returns an address connected to a currently used port.
     Port& get_port(int id){return ports[id];}
     Port& get_connection_port(const std::string&);//returns the port connected to a device with entered address.
+	int get_last_port_id() { return ports.size() - 1; }
     
 protected:
     std::vector<Port>ports;

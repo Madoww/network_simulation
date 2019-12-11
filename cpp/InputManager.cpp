@@ -1,6 +1,7 @@
 #include "InputManager.hpp"
 #include <iostream>
 #include <algorithm>
+#include <cctype>
 #include "Device_manager.hpp"
 #include "Switch.hpp"
 #define function arguments[0]
@@ -44,6 +45,10 @@ void InputManager::call_command(std::string& command)
             current_argument = "";
         }
     }
+	for (int i = 0; i < 4; i++)
+	{
+		arguments.push_back("");
+	}
 	if (function == "ping")
 		cm::ping(arguments[1]);
 	else if (function == "set_device")
@@ -72,12 +77,22 @@ void InputManager::call_command(std::string& command)
 		cm::get_type();
 	else if (function == "add_port")
 		cm::add_port(arguments[1]);
-    else if(function == "add_website")
-        cm::add_website(arguments[1], arguments[2]);
+	else if (function == "add_website")
+		cm::add_website(arguments[1], arguments[2]);
+	else if (function == "add_device")
+	{
+		std::transform(arguments[1].begin(), arguments[1].end(), arguments[1].begin(), [](char c) {return std::tolower(c); });
+		cm::add_device(arguments[1], arguments[2]);
+	}
+	else if (function == "install_service")
+		cm::install_service(arguments[1], arguments[2]);
 	else if (function == "set_port")
 		cm::set_port(atoi(arguments[1].c_str()));
-    else if(function == "add_record")
-        cm::add_record(arguments[1], arguments[2]);
+	else if (function == "add_record")
+	{
+		std::transform(arguments[1].begin(), arguments[1].end(), arguments[1].begin(), [](char c) {return std::tolower(c); });
+		cm::add_record(arguments[1], arguments[2]);
+	} 
 	else if (function == "connect_to")
 		cm::connect_to(arguments[1], atoi(arguments[2].c_str()));
 	else if (function == "connect")

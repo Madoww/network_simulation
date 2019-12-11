@@ -17,8 +17,9 @@ class DNS_record : public Connecting
 {
 public:
     DNS_record(const std::string& name, const std::string& address);
-    std::string address;
+    const std::string& get_record_address(){return address;}
 private:
+    std::string address;
 };
 
 #endif /* Website_hpp */

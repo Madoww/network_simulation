@@ -15,7 +15,7 @@ Web_server::Web_server(const std::string& name)
     ports.emplace_back(Port(ports.size()));
     m_name = name;
     ip.set_other_address(m_name);
-    m_type = Device_type::Server;
+    m_type = Device_type::WEB;
 }
 
 void Web_server::create_website(const Website& site)
