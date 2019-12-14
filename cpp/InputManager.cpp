@@ -59,6 +59,8 @@ void InputManager::call_command(std::string& command)
 			arguments.emplace_back("0");
 		cm::set_address(arguments[1], atoi(arguments[2].c_str()));
 	}
+    else if(function == "set_gateway")
+        cm::set_gateway(arguments[1]);
 	else if (function == "set_dhcp_range")
 	{
 		cm::set_dhcp_range(arguments[1], atoi(arguments[2].c_str()), atoi(arguments[3].c_str()));
@@ -73,6 +75,8 @@ void InputManager::call_command(std::string& command)
 		cm::display_address();
 	else if (function == "get_mask")
 		cm::get_mask();
+    else if(function == "get_gateway")
+        cm::get_gateway();
 	else if (function == "get_type")
 		cm::get_type();
 	else if (function == "add_port")

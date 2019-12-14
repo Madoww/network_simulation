@@ -82,6 +82,38 @@ app::app()
     //cm::set_address_dhcp();
     cm::set_device("server");
     //cm::set_address_dhcp();
+
+	std::unique_ptr<Network_device> f1(new Computer("f1"));
+	std::unique_ptr<Network_device> f2(new Computer("f2"));
+	std::unique_ptr<Network_device> r1(new Router("r1"));
+    std::unique_ptr<Network_device> d1(new Switch("d1"));
+    std::unique_ptr<Network_device> d2(new Switch("d2"));
+	devices.add_device(f1);
+	devices.add_device(f2);
+	devices.add_device(r1);
+    devices.add_device(d1);
+    devices.add_device(d2);
+    cm::add_port("d1");
+    cm::add_port("d2");
+    cm::add_port("r1");
+    cm::set_device("f1");
+    cm::connect_to("d1",0);
+    cm::set_device("f2");
+    cm::connect_to("d2",0);
+    cm::connect("d1",1,"r1",0);
+    cm::connect("d2",1,"r1",1);
+    cm::set_device("f2");
+    cm::set_address("172.22.22.1");
+    cm::set_gateway("172.22.22.16");
+    cm::set_device("f1");
+    cm::set_address("192.168.0.1");
+    cm::set_gateway("192.168.0.50");
+    cm::set_device("r1");
+    cm::set_address("192.168.0.50");
+    cm::set_port(1);
+    cm::set_address("172.22.22.16");
+    cm::set_device("f1");
+    cm::set_gateway("192.168.0.50");
 }
 
 void app::run()

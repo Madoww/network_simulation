@@ -13,6 +13,7 @@ private:
     std::string m_data;
 };
 
+//Contains a name of a website (e.g. xyz.com) and its address.
 class DNS_record : public Connecting
 {
 public:

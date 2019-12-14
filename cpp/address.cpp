@@ -69,7 +69,7 @@ bool Address::set_address(std::string ip, short mask)
         m_class = 'D';
     else
         m_class = 'E';
-    if(mask>0)
+    if(mask>0 && mask%8!=0)
     {
         m_mask = mask;
     }

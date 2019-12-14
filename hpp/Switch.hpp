@@ -18,7 +18,6 @@ class Switch : public Connectable
 public:
     Switch(const std::string&);
     void set_address(const std::string&, short mask = -1) override;//Set the address of the current port.
-    //const Address& find_device(const std::string&)override;//Checks if a device with entered address is connected to any of the ports.
 private:
     static int searched_for;
 };

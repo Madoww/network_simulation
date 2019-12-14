@@ -22,12 +22,15 @@ class Network_device
 public:
     virtual const Address& get_address()const;
     virtual void set_address(const std::string&, short mask = -1);//attempt to set the device's address
+    virtual void set_gateway(const std::string&);
+    virtual const Address& get_gateway()const{return gateway;}
     virtual const std::string& get_name(){return m_name;}
     virtual const Device_type& get_type();
     bool is_dhcp = false;
     virtual ~Network_device(){}
 protected:
     Address ip;
+    Address gateway;
     std::string m_name;
     Device_type m_type;
     
@@ -55,6 +58,7 @@ private:
 	friend class DHCP;
 	friend class DNS;
     friend class Web_server;
+	friend class Router;
     bool occupied = false;
 };
 
@@ -65,13 +69,12 @@ public:
     virtual const Address& find_device(const std::string&);//Checks if a device with entered address is connected to any of the ports recursively.
     virtual void set_port(int id); //set the currently used port to ID.
     virtual void add_port(); //create a new port.
-	void get_port_info();
+	void get_port_info();//prints connection addresses of all ports.
     int get_current_port_id(){return ports[current_port].get_id();}
     const Address& get_connection_address()const;//Returns an address connected to a currently used port.
     Port& get_port(int id){return ports[id];}
     Port& get_connection_port(const std::string&);//returns the port connected to a device with entered address.
 	int get_last_port_id() { return ports.size() - 1; }
-    
 protected:
     std::vector<Port>ports;
     short current_port = 0;

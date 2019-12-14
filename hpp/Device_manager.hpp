@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "Computer.hpp"
+#include "Router.hpp"
 
 class Device_manager
 {

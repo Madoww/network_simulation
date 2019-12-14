@@ -35,7 +35,7 @@ void ping(const std::string& address)
     ip.set_other_address(address);
     if(dynamic_cast<Connecting*>(current_device.get())->is_connected())
     {
-        if(current_device->get_address().is_same_network(dynamic_cast<Connecting*>(current_device.get())->get_connection()->find_device(address)))
+        if(dynamic_cast<Connecting*>(current_device.get())->get_connection()->find_device(address).get_address()!="No address set")
             for(int i = 0; i<1; i++)
             {
                 std::cout<<"Reply from "<<address<<std::endl;
@@ -63,6 +63,14 @@ void set_address(const std::string& address, int mask)
     }
     else
         std::cout<<"No device set"<<'\n';
+    if(auto device = dynamic_cast<Connectable*>(current_device.get()))
+    {
+        device->get_port(device->get_current_port_id()).set_address(address,mask);
+    }
+}
+void set_gateway(const std::string& address)
+{
+    current_device->set_gateway(address);
 }
 void set_address_dhcp()
 {
@@ -211,6 +219,9 @@ void display_address()
 {
 	if (Device_manager::instance().get_current_device()->get_name() != "")
 	{
+        if(auto device = dynamic_cast<Connectable*>(current_device.get()))
+            std::cout<<device->get_port(device->get_current_port_id()).get_address().get_address()<<std::endl;
+        else
 		std::cout << Device_manager::instance().get_current_device()->get_address().get_address() <<", "<< Device_manager::instance().get_current_device()->get_address().get_mask() << '\n';
 	}
     else
@@ -218,7 +229,14 @@ void display_address()
 }
 void get_mask()
 {
-    if(Device_manager::instance().get_current_device()->get_name()!="") std::cout<<Device_manager::instance().get_current_device()->get_address().get_mask()<<'\n';
+    if(Device_manager::instance().get_current_device()->get_name()!="") std::cout<<current_device->get_address().get_mask()<<'\n';
+    else
+        std::cout<<"No device set"<<'\n';
+}
+void get_gateway()
+{
+    if(Device_manager::instance().get_current_device()->get_name()!="")
+        std::cout<<current_device->get_gateway().get_address()<<std::endl;
     else
         std::cout<<"No device set"<<'\n';
 }
