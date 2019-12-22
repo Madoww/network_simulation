@@ -22,11 +22,11 @@ public:
 	void add_record(const DNS_record&);
 	void set_dhcp_range(const std::string&, short mask, short address_amount);
 	void get_dhcp_users();
+	Address get_dhcp();
 private:
 	bool dhcp_enabled = false;
 	bool dns_enabled = false;
 	bool web_enabled = false;
-	static int searched_for;
 };
 
 class DHCP : public Connectable
@@ -38,13 +38,12 @@ public:
     void get_dhcp_users();//Prints all devices using a particular DHCP server.
     Address get_dhcp();//Returns a free address from the range. If no address is free, an empty one is returned.
 protected:
+	short dhcp_range = 1;
+	short used_addresses = 0;
     Address dhcp_address;
-    short dhcp_range = 1;
-    short used_addresses = 0;
     std::vector<Network_device*> users;//Pointers to connected devices.
     std::vector<std::string>active_addresses;//Used addresses.
 private:
-	static int searched_for;
 };
 
 class DNS : public Connectable

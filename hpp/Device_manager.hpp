@@ -4,6 +4,8 @@
 #include <memory>
 #include "Computer.hpp"
 #include "Router.hpp"
+#include "Server.hpp"
+#include <deque>
 
 class Device_manager
 {
@@ -13,8 +15,9 @@ public:
     void add_device(std::unique_ptr<Network_device>& device);
     void set_current_device(const std::string&);//Check if a device exists, if so, set it as currently used.
     std::unique_ptr<Network_device>& find_device(const std::string&);//find device by name
-    std::unique_ptr<Network_device>& find_device_by_address(const std::string&);//find device by address
+    std::unique_ptr<Network_device>& find_device_by_address(const std::string&);
     std::unique_ptr<Network_device>& find_device_by_type(const std::string&);
+    std::vector<Server*> find_servers();
     const std::unique_ptr<Network_device>& get_current_device()const{return devices[current_device];}
     //bool is_valid(
     
@@ -25,7 +28,7 @@ public:
     }
 private:
     Device_manager();
-    std::vector<std::unique_ptr<Network_device>> devices;
+    std::deque<std::unique_ptr<Network_device>> devices;
     int current_device = -1;
 };
 

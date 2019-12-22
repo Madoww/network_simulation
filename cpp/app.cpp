@@ -79,7 +79,7 @@ app::app()
     cm::set_device("k1");
     cm::set_address_dhcp();
     cm::set_device("k2");
-    //cm::set_address_dhcp();
+    cm::set_address_dhcp();
     cm::set_device("server");
     //cm::set_address_dhcp();
 

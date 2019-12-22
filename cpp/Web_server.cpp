@@ -12,7 +12,7 @@
 Web_server::Web_server(const std::string& name)
 {
     websites.push_back(Website("0.0.0.1","Invalid website"));
-    ports.emplace_back(Port(ports.size()));
+	add_port();
     m_name = name;
     ip.set_other_address(m_name);
     m_type = Device_type::WEB;

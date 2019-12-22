@@ -3,10 +3,10 @@
 
 DNS::DNS(const std::string& name)
 {
-	ports.emplace_back(Port(ports.size()));
+	add_port();
 	m_name = name;
 	ip.set_other_address(m_name);
-	m_type = Device_type::Server;
+	m_type = Device_type::DNS;
 }
 
 void DNS::add_record(const DNS_record& record)
@@ -14,7 +14,7 @@ void DNS::add_record(const DNS_record& record)
     records.push_back(std::move(record));
     add_port();
     ports[ports.size()-1].connect_device(records[records.size()-1].get_address());
-    std::cout<<"DNS: "<<ports[ports.size()-1].get_address().get_address()<<std::endl;
+    std::cout<<"DNS: "<<records[records.size()-1].get_address().get_address()<<std::endl;
 }
 
 const std::string& DNS::find_record(const std::string& name)

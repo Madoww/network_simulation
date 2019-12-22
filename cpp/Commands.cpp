@@ -35,7 +35,7 @@ void ping(const std::string& address)
     ip.set_other_address(address);
     if(dynamic_cast<Connecting*>(current_device.get())->is_connected())
     {
-        if(dynamic_cast<Connecting*>(current_device.get())->get_connection()->find_device(address).get_address()!="No address set")
+        if(auto device = dynamic_cast<Connecting*>(current_device.get())->get_connection()->find_device(address); device.get_address()!="" && Address(device.get_address()).is_valid())
             for(int i = 0; i<1; i++)
             {
                 std::cout<<"Reply from "<<address<<std::endl;
@@ -74,13 +74,17 @@ void set_gateway(const std::string& address)
 }
 void set_address_dhcp()
 {
-	//current_device->set_address(dynamic_cast<Server*>(Device_manager::instance().find_device(server_name).get())->get_dhcp().get_address());
-	//current_device->set_address(dynamic_cast<Server*>(dynamic_cast<Connecting*>(current_device.get())->get_connection()->find_device(server_name))->get_dhcp());
-	if (dynamic_cast<Connectable*>(Device_manager::instance().find_device_by_type("Server").get())->find_device(current_device->get_address().get_address()).get_address() == current_device->get_address().get_address())
+	if (auto device = dynamic_cast<Connecting*>(current_device.get()); device->is_connected())
 	{
-		current_device->set_address(dynamic_cast<DHCP*>(Device_manager::instance().find_device_by_type("DHCP").get())->get_dhcp().get_address());
+		for (auto server : Device_manager::instance().find_servers())
+		{
+			if (device->get_connection()->find_device(server->get_address().get_address()).is_valid())
+			{
+                Address temp = server->get_dhcp();
+				current_device->set_address(temp.get_address(),temp.get_mask());
+			}
+		}
 	}
-
 }
 void set_dhcp_range(const std::string& first_address,short mask, short addresses_amount)
 {

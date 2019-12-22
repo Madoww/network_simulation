@@ -60,3 +60,17 @@ std::unique_ptr<Network_device>& Device_manager::find_device_by_type(const std::
     }
     return devices[0];
 }
+
+std::vector<Server*> Device_manager::find_servers()
+{
+    std::vector<Server*> servers;
+    for(auto& device : devices)
+    {
+		if (device->get_type() == Device_type::Server)
+		{
+			servers.emplace_back(dynamic_cast<Server*>(device.get()));
+		}
+            
+    }
+    return servers;
+}

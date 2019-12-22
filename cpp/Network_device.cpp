@@ -7,6 +7,7 @@
 #define server_service_type Device_manager::instance().find_device(port.get_connection_address().get_address())->get_type()
 
 static std::vector<std::string> device_types = {"Computer","Switch"};
+int Network_device::searched_for = 0;
 
 void Network_device::set_address(const std::string& address, short mask)
 {
@@ -90,6 +91,10 @@ void Connectable::get_port_info()
 	}
 }
 
+Port::Port(int id)
+{
+	port_number = id;
+}
 void Port::set_id(int id)
 {
     port_number = id;
@@ -122,6 +127,15 @@ const Address& Connectable::find_device(const std::string& address)
     static Connectable* base_switch = nullptr;
     static Connectable* previous_switch = nullptr;
 	static bool has_to_be_same_network = true;
+	if (this->get_address().get_address() == address)
+	{
+		devices_checked.clear();
+		searched_for = 0;
+		base_switch = nullptr;
+		previous_switch = nullptr;
+		has_to_be_same_network = true;
+		return this->get_address();
+	}
     if(auto router = dynamic_cast<Router*>(this))
     {
         if((current_device->get_gateway().get_address() == router->get_port(0).get_address().get_address() &&

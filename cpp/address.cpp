@@ -6,9 +6,17 @@
 
 Address::Address()
 {
-    m_address = "No address set";
+	m_address = "No address set";
 }
-
+Address::Address(std::string address, short mask)
+{
+	if(!set_address(address,mask))
+	  m_address = "No address set";
+}
+bool Address::is_valid()const
+{
+	return (m_address != "No address set" && m_address != "");
+}
 bool Address::set_address(std::string ip, short mask)
 {
     backup = m_address;
@@ -194,7 +202,6 @@ const bool Address::is_same_network(const Address& address)const
 
 bool Address::error_while_creating(const std::string& message)
 {
-    std::cout<<message<<std::endl;
     m_address = backup;
     return false;
 }

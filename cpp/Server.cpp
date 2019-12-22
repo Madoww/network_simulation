@@ -4,11 +4,9 @@
 #define current_device Device_manager::instance().get_current_device()
 #define find_device(x) Device_manager::instance().find_device(x)
 
-int Server::searched_for = 0;
-
 Server::Server(const std::string& name)
 {
-	ports.emplace_back(Port(ports.size()));
+	add_port();
 	m_name = name;
 	ip.set_other_address(m_name);
 	m_type = Device_type::Server;
@@ -59,7 +57,19 @@ void Server::get_dhcp_users()
 		}
 	}
 }
-
+Address Server::get_dhcp()
+{
+	if (dhcp_enabled)
+	{
+		for(auto& port : ports)
+		if (auto dhcp = dynamic_cast<DHCP*>(find_device(port.get_connection_address().get_address()).get()))
+			return dhcp->get_dhcp();
+	}
+	else
+	{
+		return current_device->get_address();
+	}
+}
 void Server::set_address(const std::string& address, short mask)
 {
     ip.set_address(address,mask);

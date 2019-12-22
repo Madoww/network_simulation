@@ -5,7 +5,7 @@
 
 DHCP::DHCP(const std::string& name)
 {
-    ports.emplace_back(Port(ports.size()));
+	add_port();
     m_name = name;
     ip.set_other_address(m_name);
     m_type = Device_type::DHCP;
@@ -17,11 +17,21 @@ void DHCP::set_dhcp_range(const std::string& first_address,short mask, short add
         Address max_address;
         max_address.set_address(first_address);
         max_address = max_address+address_amount;
+        active_addresses.clear();
+        used_addresses = 0;
+        Device_manager::instance().set_current_device(this->get_name());
         if(dhcp_address.is_same_network(max_address))
         {
             dhcp_address.set_address(first_address,mask);
             dhcp_range = address_amount;
             std::cout << "DHCP ranged set to: " << dhcp_address.get_address() << ", " << dhcp_address.get_mask() << ", " << dhcp_range << std::endl;
+            for(int i = 0; i<users.size(); i++)
+            {
+                Device_manager::instance().set_current_device(users[i]->get_name());
+                Address temp = get_dhcp();
+                users[i]->set_address(temp.get_address(),temp.get_mask());
+                std::cout<<users[i]->get_name()<<" updated to: "<<temp.get_address()<<std::endl;
+            }
         }
         else
             std::cout<<"Invalid range"<<std::endl;
@@ -30,7 +40,7 @@ void DHCP::set_dhcp_range(const std::string& first_address,short mask, short add
 Address DHCP::get_dhcp()
 {
     if(used_addresses<dhcp_range){
-        if (std::find(users.begin(), users.end(), current_device.get()) != users.end())
+        if (std::find(active_addresses.begin(), active_addresses.end(), current_device->get_address().get_address()) != active_addresses.end())
             return current_device->get_address();
     Address temp;
     temp.set_address(dhcp_address.get_address(),dhcp_address.get_mask());
@@ -42,13 +52,14 @@ Address DHCP::get_dhcp()
     }
     used_addresses++;
     Device_manager::instance().get_current_device()->is_dhcp = true;
-    users.push_back(Device_manager::instance().get_current_device().get());
+    if(std::find(users.begin(),users.end(),current_device.get())==users.end())
+        users.push_back(Device_manager::instance().get_current_device().get());
     active_addresses.push_back(temp.get_address());
     return temp;
     }
     else
     {
-        std::cout<<"No usable address"<<std::endl;
+
         return Address();
     }
 }

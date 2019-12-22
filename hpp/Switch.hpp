@@ -19,7 +19,6 @@ public:
     Switch(const std::string&);
     void set_address(const std::string&, short mask = -1) override;//Set the address of the current port.
 private:
-    static int searched_for;
 };
 
 #endif /* Switch_hpp */

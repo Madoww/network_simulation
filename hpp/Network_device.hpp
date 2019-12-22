@@ -20,12 +20,12 @@ enum class Device_type
 class Network_device
 {
 public:
-    virtual const Address& get_address()const;
+    const Address& get_address()const;
     virtual void set_address(const std::string&, short mask = -1);//attempt to set the device's address
     virtual void set_gateway(const std::string&);
-    virtual const Address& get_gateway()const{return gateway;}
-    virtual const std::string& get_name(){return m_name;}
-    virtual const Device_type& get_type();
+    const Address& get_gateway()const{return gateway;}
+    const std::string& get_name(){return m_name;}
+    const Device_type& get_type();
     bool is_dhcp = false;
     virtual ~Network_device(){}
 protected:
@@ -33,6 +33,7 @@ protected:
     Address gateway;
     std::string m_name;
     Device_type m_type;
+	static int searched_for;
     
 };
 //Intended to be used only by the Connectable class
@@ -41,34 +42,27 @@ class Port : public Network_device
 public:
     void set_occupied(bool status){occupied = status;}
     void update_connection_address(const Address& address){connection_address=address;}
+	void set_id(int id);
+	int get_id() { return port_number; }
+	bool is_occupied() { return occupied; }
+	const Address& get_connection_address()const { return connection_address; }
+	void connect_device(const Address&);
 protected:
     Port(int id);
-    void set_id(int id);
-    int get_id(){return port_number;}
-    bool is_occupied(){return occupied;}
-    const Address& get_connection_address()const{return connection_address;}
-    
-    void connect_device(const Address&);
     Address connection_address; //Address of the device connected to this port.
     int port_number;
 private:
     friend class Connectable;
-    friend class Switch;
-    friend class Server;
-	friend class DHCP;
-	friend class DNS;
-    friend class Web_server;
-	friend class Router;
     bool occupied = false;
 };
 
 class Connectable : public Network_device
 {
 public:
-    virtual void connect_device(const Address&, int port_id);//Check whether a port[port_id] exists and is not occupied, then connect a device.
-    virtual const Address& find_device(const std::string&);//Checks if a device with entered address is connected to any of the ports recursively.
-    virtual void set_port(int id); //set the currently used port to ID.
-    virtual void add_port(); //create a new port.
+    void connect_device(const Address&, int port_id);//Check whether a port[port_id] exists and is not occupied, then connect a device.
+    const Address& find_device(const std::string&);//Checks if a device with entered address is connected to any of the ports recursively.
+    void set_port(int id); //set the currently used port to ID.
+    void add_port(); //create a new port.
 	void get_port_info();//prints connection addresses of all ports.
     int get_current_port_id(){return ports[current_port].get_id();}
     const Address& get_connection_address()const;//Returns an address connected to a currently used port.
@@ -78,18 +72,19 @@ public:
 protected:
     std::vector<Port>ports;
     short current_port = 0;
-    
+    virtual ~Connectable(){}
 };
 
 class Connecting : public Network_device
 {
 public:
-    virtual void connect(const std::string&,int); //Check whether the entered device is connectable, if so, connect this device to it.
+    void connect(const std::string&,int); //Check whether the entered device is connectable, if so, connect this device to it.
     bool is_connected(){return connected;}
     Connectable* get_connection(){return connected_to;}
 protected:
     Connectable* connected_to;
     bool connected = false;
+	virtual ~Connecting(){}
 };
 
 #endif /* Network_device_hpp */

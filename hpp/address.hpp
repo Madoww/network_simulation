@@ -8,7 +8,8 @@
 class Address
 {
 public:
-    Address();
+	Address();
+    Address(std::string, short mask = -1);
     bool set_address(std::string, short mask = -1);//attempts to set an address. If fails, address remains unchanged.
     const std::string& get_address()const;
     const char& get_class()const{return m_class;}
@@ -17,6 +18,7 @@ public:
     const bool is_same_network(const Address&)const;//Check whether both addresses are in the same network.
     const std::vector<short>& get_octets()const{return octets;}
     void set_other_address(const std::string&);
+	bool is_valid()const;
     Address operator+(short num)
     {
         Address temp;
